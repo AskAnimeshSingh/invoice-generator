@@ -4,9 +4,8 @@
   "private": true,
   "description": "React + Node invoice generator with signature in localStorage",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "npm run start --prefix server",
-    "client": "npm run dev --prefix client",
+    "start": "concurrently -n server,client -c green,cyan \"npm run start --prefix server\" \"npm run dev --prefix client\"",
+    "dev": "npm start",
     "install:all": "npm install && npm install --prefix server && npm install --prefix client"
   },
   "devDependencies": {

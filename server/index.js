@@ -255,8 +255,10 @@ app.post('/api/generate-invoice', (req, res) => {
       notesY += doc.heightOfString(notes, { width: 260 }) + 10;
     }
 
-    // Signature block (bottom right, keep one page)
-    const sigY = Math.min(Math.max(notesY + 20, 620), 680);
+    // Signature block (bottom right) — keep clear of page-1 footer
+    const pageHeight = doc.page.height;
+    const footerReserve = 48;
+    const sigY = Math.min(Math.max(notesY + 20, 560), pageHeight - footerReserve - 110);
     const sigBoxWidth = 180;
     const sigBoxX = right - sigBoxWidth;
 
@@ -267,6 +269,7 @@ app.post('/api/generate-invoice', (req, res) => {
       .text('AUTHORIZED SIGNATURE', sigBoxX, sigY, {
         width: sigBoxWidth,
         align: 'center',
+        lineBreak: false,
       });
 
     if (signatureDataUrl && signatureDataUrl.startsWith('data:image')) {
@@ -285,6 +288,7 @@ app.post('/api/generate-invoice', (req, res) => {
           .text('(signature unavailable)', sigBoxX, sigY + 35, {
             width: sigBoxWidth,
             align: 'center',
+            lineBreak: false,
           });
       }
     } else {
@@ -295,6 +299,7 @@ app.post('/api/generate-invoice', (req, res) => {
         .text('(no signature on file)', sigBoxX, sigY + 35, {
           width: sigBoxWidth,
           align: 'center',
+          lineBreak: false,
         });
     }
 
@@ -312,21 +317,27 @@ app.post('/api/generate-invoice', (req, res) => {
       .text(COMPANY.name, sigBoxX, sigY + 84, {
         width: sigBoxWidth,
         align: 'center',
+        lineBreak: false,
       });
 
-    // Footer
+    // Page-1 footer only (y=800 exceeded bottom margin and spawned a blank 2nd page)
+    const prevBottom = doc.page.margins.bottom;
+    doc.page.margins.bottom = 0;
+
     doc
       .fillColor('#8a9a93')
+      .font('Helvetica')
       .fontSize(7.5)
       .text(
         `Thank you for your business  ·  ${COMPANY.website}`,
         left,
-        800,
-        { width: contentWidth, align: 'center' }
+        pageHeight - 28,
+        { width: contentWidth, align: 'center', lineBreak: false }
       );
 
-    // Bottom accent
-    doc.rect(0, 833, pageWidth, 9).fill('#1a5f4a');
+    doc.rect(0, pageHeight - 9, pageWidth, 9).fill('#1a5f4a');
+
+    doc.page.margins.bottom = prevBottom;
 
     doc.end();
   } catch (err) {
