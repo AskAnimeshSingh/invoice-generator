@@ -11,19 +11,18 @@
 npm run install:all
 ```
 
-## Run (local)
+## Run
 
 ```bash
 npm start
 ```
 
-- App → http://localhost:5173
-- API → http://localhost:5000
+App → http://localhost:5173
+
+PDF is generated in the browser (no separate API server needed).
 
 ## Deploy (Vercel)
 
-1. Push this repo to GitHub
-2. Import the repo in Vercel (leave **Root Directory** empty / `.`)
-3. Deploy — `vercel.json` builds `client/` and serves `/api`
-
-Do **not** set Root Directory to `client` (API will break).
+1. Push to GitHub
+2. Import repo in Vercel (Root Directory = empty / `.`)
+3. Deploy

@@ -2,15 +2,12 @@
   "name": "invoice-generator",
   "version": "1.0.0",
   "private": true,
-  "description": "React + Node invoice generator with signature in localStorage",
+  "description": "React invoice generator with browser PDF and localStorage signature",
   "scripts": {
-    "start": "concurrently -n server,client -c green,cyan \"npm run start --prefix server\" \"npm run dev --prefix client\"",
+    "start": "npm run dev --prefix client",
     "dev": "npm start",
     "build": "npm run build --prefix client",
-    "install:all": "npm install && npm install --prefix server && npm install --prefix client"
-  },
-  "dependencies": {
-    "pdfkit": "^0.20.2"
+    "install:all": "npm install && npm install --prefix client"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

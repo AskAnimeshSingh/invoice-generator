@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import axios from 'axios';
 import SignaturePad from './components/SignaturePad';
 import CustomerForm from './components/CustomerForm';
 import ProductSelect from './components/ProductSelect';
@@ -8,6 +7,7 @@ import {
   CustomerDetails,
   nextInvoiceNumber,
 } from './data';
+import { downloadInvoicePdf } from './generateInvoicePdf';
 
 const emptyCustomer: CustomerDetails = {
   name: '',
@@ -48,34 +48,16 @@ export default function App() {
     setLoading(true);
     try {
       const invoiceNumber = nextInvoiceNumber();
-      const response = await axios.post(
-        '/api/generate-invoice',
-        {
-          customer,
-          items: cart.map((c) => ({
-            name: c.name,
-            quantity: c.quantity,
-            price: c.price,
-          })),
-          invoiceNumber,
-          invoiceDate: new Date().toISOString(),
-          signatureDataUrl: signature,
-          notes,
-        },
-        { responseType: 'blob' }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `invoice-${invoiceNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      downloadInvoicePdf({
+        customer,
+        items: cart,
+        invoiceNumber,
+        signatureDataUrl: signature,
+        notes,
+      });
     } catch (err) {
       console.error(err);
-      setError('Could not generate the PDF. Is the server running on port 5000?');
+      setError('Could not generate the PDF. Please try again.');
     } finally {
       setLoading(false);
     }
